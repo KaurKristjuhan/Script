@@ -19,7 +19,8 @@ int find_place(string s,vector <string> v){
 
 bool compare_patterns(string id1, string id2, map<string,vector<string> > strip_number, map<string,vector<string> > channel_number){
   bool result = true;
-  if (strip_number[id1].size()!=strip_number[id2].size()) result=false;
+  if (strip_number[id1].size()!=128) result=false;
+  if (strip_number[id1].size()!=128) result=false;
   for(int i=0;i<strip_number[id1].size();i++){
      int place = find_place(strip_number[id1][i],strip_number[id2]);
      if(place==-1){
@@ -31,19 +32,15 @@ bool compare_patterns(string id1, string id2, map<string,vector<string> > strip_
   return result;
 }
 
-int main(){
-  ifstream fin;
-  fin.open("test.out");
-  string s;
+void process_data(vector<string> data){
   vector<vector<string> > v;//data stored in here
   for(int i=0;i<9;i++){
     vector<string> q;
     v.push_back(q);
   }
-  getline(fin,s);
   int line_number=1;
-  while(getline(fin,s)){
-    stringstream ss(s);
+  for(int i=0;i<data.size();i++){
+    stringstream ss(data[i]);
     string buf;
     int counter=0;
     while(ss>>buf){
@@ -51,7 +48,7 @@ int main(){
       counter++;
     }
     if(counter!=9){
-      cout<<"Error on line "<<line_number<<":"<<endl<<s<<endl<<"Only processing data before this line."<<endl;
+      cout<<"Error on line "<<line_number<<":"<<endl<<data[i]<<endl<<"Only processing data before this line."<<endl;
       for(int i=0;i<counter-1;i++){
 	v[counter%9].pop_back();
       }
@@ -99,10 +96,12 @@ int main(){
       }
       if(strip_number[ids[j]].size()!=128) checked[j]=true;
     }
-    patterns.push_back(p);
-    cout<<endl<<"Pattern "<<patterns.size()<<endl<<endl;
-    for(int j=0;j<p.size();j++){
-      cout<<p[j]<<endl;
+    if(p.size()!=0){
+      patterns.push_back(p);
+      cout<<endl<<"Pattern "<<patterns.size()<<endl<<endl;
+      for(int j=0;j<p.size();j++){
+	cout<<p[j]<<endl;
+      }
     }
   }
   compare_patterns(ids[1],ids[0],strip_number,channel_number);
@@ -133,4 +132,17 @@ int main(){
   for(int i=0;i<errors.size();i++){
     cout<<errors[i]<<endl;
   }
+}
+
+int main(){
+  ifstream fin;
+  fin.open("test (copy).out");
+  string s;
+  getline(fin,s); //"not slice test"
+  vector<string> data;
+  while(getline(fin,s)){
+    data.push_back(s);
+  }
+  process_data(data);
+  return 0;
 }
