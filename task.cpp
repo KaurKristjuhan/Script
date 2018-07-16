@@ -101,7 +101,7 @@ void process_data(vector<string> data){
     }
     if(p.size()!=0){
       patterns.push_back(p);
-      foutp<<"########################################"<<endl<<"Pattern "<<patterns.size()<<endl<<endl;
+      foutp<<"##############################################"<<endl<<"Pattern "<<patterns.size()<<endl<<endl;
       foutp<<"Mapping:"<<endl;
       for(int j=0;j<128;j++){
 	foutp<<strip_number[p[0]][j]<<" <->  "<<channel_number[p[0]][j]<<endl;
@@ -143,7 +143,10 @@ void process_data(vector<string> data){
   }
 }
 
-int main(){
+int main(int argc, char *argv[]){
+  for(int i=1;i<argc;i++){
+    cout<<argv[i]<<endl;
+  }
   ifstream fin;
   fin.open("test (copy).out");
   string s;
