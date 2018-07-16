@@ -33,7 +33,10 @@ bool compare_patterns(string id1, string id2, map<string,vector<string> > strip_
 }
 
 void process_data(vector<string> data){
-  vector<vector<string> > v;//data stored in here
+  ofstream foutp("patterns.txt");
+  ofstream foute("errors.txt");
+  //structured data stored in here (9 elements per line)
+  vector<vector<string> > v;
   for(int i=0;i<9;i++){
     vector<string> q;
     v.push_back(q);
@@ -48,7 +51,7 @@ void process_data(vector<string> data){
       counter++;
     }
     if(counter!=9){
-      cout<<"Error on line "<<line_number<<":"<<endl<<data[i]<<endl<<"Only processing data before this line."<<endl;
+      cout<<endl<<"Error on line "<<line_number<<":"<<endl<<data[i]<<endl<<"Only processing data before this line."<<endl;
       for(int i=0;i<counter-1;i++){
 	v[counter%9].pop_back();
       }
@@ -56,7 +59,7 @@ void process_data(vector<string> data){
     }
     line_number++;
   }
-  map<string,set<string> > ms;
+  map<string,set<string> > ms; //a map from ID-s to the info about the position of the vfat
   map<string,vector<string> > strip_number;
   map<string,vector<string> > channel_number;
   vector <string> ids;
@@ -68,25 +71,25 @@ void process_data(vector<string> data){
       ms[v[7][i]]=st;
       strip_number[v[7][i]]=vs;
       channel_number[v[7][i]]=vc;
-      ids.push_back(v[7][i]);
+      ids.push_back(v[7][i]); //vfatId
     }
-    ms[v[7][i]].insert(v[0][i]);
-    ms[v[7][i]].insert(v[1][i]);
-    ms[v[7][i]].insert(v[2][i]);
-    ms[v[7][i]].insert(v[3][i]);
-    ms[v[7][i]].insert(v[4][i]);
-    strip_number[v[7][i]].push_back(v[5][i]);
-    channel_number[v[7][i]].push_back(v[6][i]);
-    ms[v[7][i]].insert(v[8][i]);
+    ms[v[7][i]].insert(v[0][i]); //vfat_position
+    ms[v[7][i]].insert(v[1][i]); //z_direction
+    ms[v[7][i]].insert(v[2][i]); //iEta
+    ms[v[7][i]].insert(v[3][i]); //iPhi
+    ms[v[7][i]].insert(v[4][i]); //depth
+    strip_number[v[7][i]].push_back(v[5][i]); //strip_number
+    channel_number[v[7][i]].push_back(v[6][i]); //vfat_chnnel_number
+    ms[v[7][i]].insert(v[8][i]); //sec
   }
-  vector<bool> checked;
+  vector<bool> checked; //True if a vfat has been assigned (or denied) a pattern
   vector<vector<string> > patterns;
   for(int i=0;i<ids.size();i++){
     checked.push_back(false);
   }
   for(int i=0;i<ids.size();i++){
     if(checked[i]==true) continue;
-    vector<string> p;
+    vector<string> p; //contains all the ID-s of the current pattern
     for(int j=i;j<ids.size();j++){
       if(checked[j]==true) continue;
       if(compare_patterns(ids[i],ids[j],strip_number,channel_number)==true){
@@ -98,9 +101,14 @@ void process_data(vector<string> data){
     }
     if(p.size()!=0){
       patterns.push_back(p);
-      cout<<endl<<"Pattern "<<patterns.size()<<endl<<endl;
+      foutp<<"########################################"<<endl<<"Pattern "<<patterns.size()<<endl<<endl;
+      foutp<<"Mapping:"<<endl;
+      for(int j=0;j<128;j++){
+	foutp<<strip_number[p[0]][j]<<" <->  "<<channel_number[p[0]][j]<<endl;
+      }
+      foutp<<endl<<"ID's:"<<endl;
       for(int j=0;j<p.size();j++){
-	cout<<p[j]<<endl;
+	foutp<<p[j]<<endl;
       }
     }
   }
@@ -128,9 +136,10 @@ void process_data(vector<string> data){
     }
   }
   cout<<endl<<"Number of ID-s: "<<ids.size()<<endl;
-  cout<<endl<<"Errors:"<<endl;
+  cout<<"Patterns written in patterns.txt"<<endl;
+  cout<<"Errors written in file errors.txt"<<endl;
   for(int i=0;i<errors.size();i++){
-    cout<<errors[i]<<endl;
+    foute<<errors[i]<<endl;
   }
 }
 
